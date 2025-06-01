@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zzaaaput</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .page.hidden {
+            display: none;
+        }
+
+        /* Gaming Background Effects */
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(192, 192, 192, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Animated Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 191, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Gaming UI Elements */
+        .game-container {
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid #00bfff;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 
+                0 0 30px rgba(0, 191, 255, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00bfff, #a020f0, #c0c0c0, #00bfff);
+            border-radius: 15px;
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            background: linear-gradient(45deg, #00bfff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titlePulse {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: #ffd700;
+        }
+
+        p {
+            text-align: center;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        /* Gaming Button Styles */
+        .game-btn {
+            background: linear-gradient(45deg, #00bfff, #0080cc);
+            border: 2px solid #a020f0;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-btn:hover::before {
+            left: 100%;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 191, 255, 0.4);
+            border-color: #00bfff;
+        }
+
+        .game-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Input Styles */
+        .game-input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00bfff;
+            color: #ffffff;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .game-input:focus {
+            border-color: #a020f0;
+            box-shadow: 0 0 20px rgba(160, 32, 240, 0.3);
+        }
+
+        .game-input::placeholder {
+            color: #888;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid #00bfff;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 191, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Page Indicators */
+        .page-indicator {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(26, 26, 46, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid #00bfff;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Special Effects */
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, -2px); }
+            20% { transform: translate(2px, 2px); }
+            30% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            90% { transform: translate(-2px, -2px); }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 30px 20px;
+                margin: 0 10px;
+            }
+
+            .nav-container {
+                bottom: 20px;
+            }
+
+            .page-indicator {
+                top: 20px;
+                right: 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Welcome Page Special Effects */
+        .welcome-text {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #c0c0c0, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Party Theme */
+        .party-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .party-container::after {
+            content: '🎮🎂🎉';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .date-info {
+            background: rgba(160, 32, 240, 0.1);
+            border: 2px solid #a020f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .date-info h3 {
+            color: #a020f0;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="page-indicator">
+        <span id="pageNum">1</span> / 6
+    </div>
+
+    <!-- Page 1: Welcome -->
+    <div class="page active" id="page1">
+        <div class="game-container floating">
+            <h1 class="glitch">LET’S DEBUG THIS PARTY!</h1>
+            <p class="welcome-text">
+                Selamat datang di <span class="highlight">Portal Coding,</span> yang bakal nge-boot kamu ke sebuah petualangan penuh bug lucu, fitur epic, dan compile error yang berkesan!
+            </p>
+            <p>
+                Prepare yourself, <span class="highlight">developer!</span> Sebuah milestone besar sudah di depan mata 🚀
+            </p>
+            <button class="game-btn" onclick="nextPage()">
+                ▶️ START QUEST →  
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 2: Name Input -->
+    <div class="page hidden" id="page2">
+        <div class="game-container">
+            <h1>SIGN IN TO THE SYSTEM</h1>
+            <p>Sebelum kita push ke branch  <span class="highlight">"Birthday_Quest",</span> kita butuh tahu siapa coder keren yang bakal join tim ini!</p>
+            <p>Silakan input username kamu di bawah ini:</p>
+            <input type="text" class="game-input" id="playerName" placeholder="Masukkan nama kamu..." maxlength="20">
+            <br><br>
+            <button class="game-btn" onclick="saveName()">
+                📝 REGISTER PLAYER
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 3: Greeting -->
+    <div class="page hidden" id="page3">
+        <div class="game-container party-container">
+            <h1>WELCOME TO THE SYSTEM!</h1>
+            <p class="welcome-text">
+                Halo <span class="highlight" id="greetName"></span>! 🧑‍💻
+            </p>
+            <p>
+                Kamu udah berhasil login ke <span class="highlight">Guild</span> paling elite di server ini! Sekarang kita lagi nyiapin release party buat versi baru kamu: v17.0!
+            </p>
+            <p>
+                "Level 17 unlocked: <span class="highlight">bug lebih banyak, </span> tapi coding style makin keren!"
+            </p>
+            <button class="game-btn" onclick="nextPage()">
+                ▶️ CONTINUE QUEST →
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 4: Story Building -->
+    <div class="page hidden" id="page4">
+        <div class="game-container">
+            <h1>SOURCE CODE TERUNGKAP!</h1>
+            <p>
+                <span class="highlight" id="storyName"></span>, program hidup aku dimulai 17 tahun lalu saat satu line of code pertama muncul — dan sejak itu, epic journey-mu terus berkembang.
+            </p>
+            <p>
+                Setelah ngelewatin banyak <span class="highlight">boss bug, </span>side projects, dan endless debugging, sekarang saatnya commit ke milestone besar: <span class="highlight">17th</span> Birthday Release!
+            </p>
+            <p>
+                Dan tiap programmer butuh tim solid buat rayain release party ini bareng-bareng!
+            </p>
+            <button class="game-btn" onclick="nextPage()">
+                🔍 REVEAL THE QUEST →
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 5: Invitation -->
+    <div class="page hidden" id="page5">
+        <div class="game-container party-container">
+            <h1>🎉 Launch Ulang Tahun ke Level Baru! 🎉</h1>
+            <p>
+                <span class="highlight" id="inviteName">Hero</span>, kamu resmi di-invite buat ikut serta dalam Birthday Raid paling hype tahun ini!
+
+            </p>
+            
+            <div class="date-info">
+                <h3>📅 DEPLOYMENT CONFIG :</h3>
+                <p><strong>Tanggal :</strong> 8 Juni 2025</p>
+                <p><strong>Waktu :</strong> 13:00 - selesai</p>
+                <p><strong>Location :</strong> Home Base</p>
+                <p><strong>Dress Code :</strong> Senyaman kalian</p>
+            </div>
+
+            <p>
+                Reward : <span class="highlight">Momen memorable,</span> vibes positif, dan mungkin...<span class="highlight">hidden easter egg!</span> 
+                sebagai reward utama! 
+            </p>
+            <button class="game-btn" onclick="nextPage()">
+                ✅ ACCEPT INVITATION →
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 6: Thanks & Hopes -->
+    <div class="page hidden" id="page6">
+        <div class="game-container floating">
+            <h1>Gratitude Commit</h1>
+            <p>
+                <span class="highlight" id="thanksName">Amazing Friend</span>, thanks udah jadi bagian dari tim terbaik sepanjang hidup ini! 🙌
+            </p>
+            <p>
+                Kehadiranmu di tiap commit dan merge request bikin setiap proyek jadi makin seru.
+            </p>
+            <p>
+                Semoga di Level 17 ini, dan di versi-versi selanjutnya, <span class="highlight">kita</span> terus bisa ngejalanin misi bareng, 
+                saling backup, dan bikin lebih banyak <span class="highlight">legendary moments</span> bersama!
+            </p>
+            <p class="welcome-text">
+                <span class="highlight">Keep coding, keep growing, and see you at the deployment party! 💻🎂</span>
+            </p>
+            <div style="margin-top: 30px;">
+                <button class="game-btn" onclick="goToPage(1)">
+                    🔄 RESTART QUEST
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <button class="nav-btn" onclick="prevPage()" id="prevBtn">‹</button>
+        <button class="nav-btn" onclick="nextPage()" id="nextBtn">›</button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let playerName = '';
+        const totalPages = 6;
+
+        function updatePageIndicator() {
+            document.getElementById('pageNum').textContent = currentPage;
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.classList.toggle('disabled', currentPage === 1);
+            nextBtn.classList.toggle('disabled', currentPage === totalPages);
+        }
+
+        function showPage(pageNum) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('active');
+            });
+            
+            // Show current page
+            const currentPageEl = document.getElementById(`page${pageNum}`);
+            currentPageEl.classList.remove('hidden');
+            
+            // Add animation delay
+            setTimeout(() => {
+                currentPageEl.classList.add('active');
+            }, 100);
+            
+            updatePageIndicator();
+            updateNavButtons();
+        }
+
+        function nextPage() {
+            if (currentPage === 2 && !playerName) {
+                alert('Silakan masukkan nama kamu terlebih dahulu!');
+                return;
+            }
+            
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        function goToPage(pageNum) {
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                currentPage = pageNum;
+                showPage(currentPage);
+            }
+        }
+
+        function saveName() {
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim();
+            
+            if (name === '') {
+                alert('Nama tidak boleh kosong!');
+                return;
+            }
+            
+            playerName = name;
+            
+            // Update all name placeholders
+            document.getElementById('greetName').textContent = playerName;
+            document.getElementById('storyName').textContent = playerName;
+            document.getElementById('inviteName').textContent = playerName;
+            document.getElementById('thanksName').textContent = playerName;
+            
+            // Add celebration effect
+            nameInput.style.borderColor = '#ffd700';
+            nameInput.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.5)';
+            
+            setTimeout(() => {
+                nextPage();
+            }, 500);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextPage();
+            } else if (e.key === 'ArrowLeft') {
+                prevPage();
+            } else if (e.key === 'Enter' && currentPage === 2) {
+                saveName();
+            }
+        });
+
+        // Initialize
+        updatePageIndicator();
+        updateNavButtons();
+
+        // Add some dynamic effects
+        setInterval(() => {
+            const glitchElements = document.querySelectorAll('.glitch');
+            glitchElements.forEach(el => {
+                if (Math.random() > 0.95) {
+                    el.style.textShadow = '2px 2px #ff0000, -2px -2px #00ffff';
+                    setTimeout(() => {
+                        el.style.textShadow = '0 0 20px rgba(0, 191, 255, 0.8)';
+                    }, 100);
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
